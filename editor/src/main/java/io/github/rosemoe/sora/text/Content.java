@@ -57,7 +57,7 @@ public class Content implements CharSequence {
 
     protected final List<ContentListener> contentListeners;
     protected final ContentBidi bidi;
-    
+
     private final List<ContentLine> lines;
     private final ReadWriteLock lock;
     private final AtomicLong documentVersion = new AtomicLong(1L);
@@ -755,7 +755,9 @@ public class Content implements CharSequence {
     }
 
     /**
-     * Get the using {@link Indexer} object
+     * Get the {@link Indexer} instance being used by this Content.
+     * <p>
+     * The returned indexer can be either the {@link #getContentIndexer()} or {@link Cursor#getIndexer()}.
      *
      * @return Indexer for this object
      */
@@ -763,6 +765,15 @@ public class Content implements CharSequence {
         if (cursor != null) {
             return cursor.getIndexer();
         }
+        return getContentIndexer();
+    }
+
+    /**
+     * Get the indexer used by this Content instance.
+     *
+     * @return The {@link Indexer} used by this Content.
+     */
+    protected Indexer getContentIndexer() {
         return indexer;
     }
 
@@ -1011,8 +1022,8 @@ public class Content implements CharSequence {
         undoManager.beforeReplace(this);
         if (cursor != null)
             cursor.beforeReplace();
-        if (indexer instanceof ContentListener) {
-            ((ContentListener) indexer).beforeReplace(this);
+        if (getContentIndexer() instanceof ContentListener listener) {
+            listener.beforeReplace(this);
         }
         for (ContentListener lis : contentListeners) {
             lis.beforeReplace(this);
@@ -1032,8 +1043,8 @@ public class Content implements CharSequence {
         undoManager.afterDelete(this, a, b, c, d, e);
         if (cursor != null)
             cursor.afterDelete(a, b, c, d, e);
-        if (indexer instanceof ContentListener) {
-            ((ContentListener) indexer).afterDelete(this, a, b, c, d, e);
+        if (getContentIndexer() instanceof ContentListener listener) {
+            listener.afterDelete(this, a, b, c, d, e);
         }
         for (ContentListener lis : contentListeners) {
             lis.afterDelete(this, a, b, c, d, e);
@@ -1060,8 +1071,8 @@ public class Content implements CharSequence {
         undoManager.afterInsert(this, a, b, c, d, e);
         if (cursor != null)
             cursor.afterInsert(a, b, c, d, e);
-        if (indexer instanceof ContentListener) {
-            ((ContentListener) indexer).afterInsert(this, a, b, c, d, e);
+        if (getContentIndexer() instanceof ContentListener listener) {
+            listener.afterInsert(this, a, b, c, d, e);
         }
         for (ContentListener lis : contentListeners) {
             lis.afterInsert(this, a, b, c, d, e);
