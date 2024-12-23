@@ -204,6 +204,15 @@ public final class Cursor {
     }
 
     /**
+     * Get current direction of selection
+     *
+     * @see #setSelectionDirection(int)
+     */
+    public int getSelectionDirection() {
+        return selDirection;
+    }
+
+    /**
      * Set current direction of selection.
      *
      * @see #getSelectionDirection()
@@ -213,15 +222,6 @@ public final class Cursor {
      */
     public void setSelectionDirection(int selDirection) {
         this.selDirection = selDirection;
-    }
-
-    /**
-     * Get current direction of selection
-     *
-     * @see #setSelectionDirection(int)
-     */
-    public int getSelectionDirection() {
-        return selDirection;
     }
 
     /**
