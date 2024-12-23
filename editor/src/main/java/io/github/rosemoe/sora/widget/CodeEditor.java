@@ -3822,7 +3822,7 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
             this.text.resetBatchEdit();
             renderer.updateTimestamp();
         } else {
-            this.text = new Content(text);
+            this.text = onCreateContent(text);
         }
 
         onSetText(this.text);
@@ -3851,6 +3851,16 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
         requestLayout();
         renderContext.invalidateRenderNodes();
         invalidate();
+    }
+
+    /**
+     * Called when the editor needs to create a new {@link Content} instance.
+     *
+     * @param text The text that must be inserted into the new content.
+     * @return The newly created {@link Content} instance.
+     */
+    protected Content onCreateContent(CharSequence text) {
+        return new Content(text);
     }
 
     /**
