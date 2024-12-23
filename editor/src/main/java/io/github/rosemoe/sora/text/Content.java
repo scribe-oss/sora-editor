@@ -55,14 +55,15 @@ public class Content implements CharSequence {
         setInitialLineCapacity(DEFAULT_LIST_CAPACITY);
     }
 
+    protected final List<ContentListener> contentListeners;
+    protected final ContentBidi bidi;
+    
     private final List<ContentLine> lines;
-    private final List<ContentListener> contentListeners;
     private final ReadWriteLock lock;
-    private int textLength;
-    private int nestedBatchEdit;
     private final AtomicLong documentVersion = new AtomicLong(1L);
     private final Indexer indexer;
-    private final ContentBidi bidi;
+    private int textLength;
+    private int nestedBatchEdit;
     private UndoManager undoManager;
     private Cursor cursor;
 
@@ -893,12 +894,12 @@ public class Content implements CharSequence {
         }
     }
 
-    public void setBidiEnabled(boolean enabled) {
-        bidi.setEnabled(enabled);
-    }
-
     public boolean isBidiEnabled() {
         return bidi.isEnabled();
+    }
+
+    public void setBidiEnabled(boolean enabled) {
+        bidi.setEnabled(enabled);
     }
 
     public boolean isRtlAt(int line, int column) {
