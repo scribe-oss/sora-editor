@@ -1015,9 +1015,18 @@ public class Content implements CharSequence {
      */
     public Cursor getCursor() {
         if (cursor == null) {
-            cursor = new Cursor(this);
+            setCursor(new Cursor(this));
         }
         return cursor;
+    }
+
+    /**
+     * Set the {@link Cursor} instance for this content.
+     *
+     * @param cursor The new {@link Cursor}.
+     */
+    protected void setCursor(Cursor cursor) {
+        this.cursor = cursor;
     }
 
     /**
