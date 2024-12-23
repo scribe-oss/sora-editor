@@ -32,14 +32,14 @@ import io.github.rosemoe.sora.util.IntPair;
  *
  * @author Rosemoe
  */
-public final class Cursor {
+public class Cursor {
 
     public final static int DIRECTION_NONE = 0;
     public final static int DIRECTION_LTR = 1;
     public final static int DIRECTION_RTL = 2;
 
     private final Content content;
-    private final CachedIndexer indexer;
+    private final Indexer indexer;
     private CharPosition leftSel, rightSel;
     private CharPosition cache0, cache1, cache2;
     private int selDirection = DIRECTION_NONE;
@@ -84,7 +84,7 @@ public final class Cursor {
      * @param column The column position
      */
     public void setLeft(int line, int column) {
-        leftSel = indexer.getCharPosition(line, column).fromThis();
+        leftSel = getIndexer().getCharPosition(line, column).fromThis();
     }
 
     /**
@@ -94,7 +94,7 @@ public final class Cursor {
      * @param column The column position
      */
     public void setRight(int line, int column) {
-        rightSel = indexer.getCharPosition(line, column).fromThis();
+        rightSel = getIndexer().getCharPosition(line, column).fromThis();
     }
 
     /**
@@ -182,7 +182,16 @@ public final class Cursor {
      * @param line First visible line
      */
     public void updateCache(int line) {
-        indexer.getCharIndex(line, 0);
+        getIndexer().getCharIndex(line, 0);
+    }
+
+    @NonNull
+    public CharPosition getCharPosition(int offset) {
+        return getIndexer().getCharPosition(offset);
+    }
+
+    public void getCharPosition(int offset, CharPosition dest) {
+        dest.set(getCharPosition(offset));
     }
 
     /**
@@ -190,7 +199,7 @@ public final class Cursor {
      *
      * @return Using Indexer
      */
-    public CachedIndexer getIndexer() {
+    public Indexer getIndexer() {
         return indexer;
     }
 
@@ -300,7 +309,7 @@ public final class Cursor {
      * @param startColumn Start column
      */
     void beforeInsert(int startLine, int startColumn) {
-        cache0 = indexer.getCharPosition(startLine, startColumn).fromThis();
+        cache0 = getIndexer().getCharPosition(startLine, startColumn).fromThis();
     }
 
     /**
@@ -312,15 +321,17 @@ public final class Cursor {
      * @param endColumn   End column
      */
     void beforeDelete(int startLine, int startColumn, int endLine, int endColumn) {
-        cache1 = indexer.getCharPosition(startLine, startColumn).fromThis();
-        cache2 = indexer.getCharPosition(endLine, endColumn).fromThis();
+        cache1 = getIndexer().getCharPosition(startLine, startColumn).fromThis();
+        cache2 = getIndexer().getCharPosition(endLine, endColumn).fromThis();
     }
 
     /**
      * Internal call back before replace
      */
     void beforeReplace() {
-        indexer.beforeReplace(content);
+        if (getIndexer() instanceof CachedIndexer cachedIndexer) {
+            cachedIndexer.beforeReplace(content);
+        }
     }
 
     /**
@@ -334,13 +345,16 @@ public final class Cursor {
      */
     void afterInsert(int startLine, int startColumn, int endLine, int endColumn,
                      CharSequence insertedContent) {
-        indexer.afterInsert(content, startLine, startColumn, endLine, endColumn, insertedContent);
+        if (getIndexer() instanceof CachedIndexer cachedIndexer) {
+            cachedIndexer.afterInsert(content, startLine, startColumn, endLine, endColumn, insertedContent);
+        }
+
         int beginIdx = cache0.getIndex();
         if (getLeft() >= beginIdx) {
-            leftSel = indexer.getCharPosition(getLeft() + insertedContent.length()).fromThis();
+            leftSel = getCharPosition(getLeft() + insertedContent.length()).fromThis();
         }
         if (getRight() >= beginIdx) {
-            rightSel = indexer.getCharPosition(getRight() + insertedContent.length()).fromThis();
+            rightSel = getCharPosition(getRight() + insertedContent.length()).fromThis();
         }
     }
 
@@ -355,7 +369,9 @@ public final class Cursor {
      */
     void afterDelete(int startLine, int startColumn, int endLine, int endColumn,
                      CharSequence deletedContent) {
-        indexer.afterDelete(content, startLine, startColumn, endLine, endColumn, deletedContent);
+        if (getIndexer() instanceof CachedIndexer cachedIndexer) {
+            cachedIndexer.afterDelete(content, startLine, startColumn, endLine, endColumn, deletedContent);
+        }
         int beginIdx = cache1.getIndex();
         int endIdx = cache2.getIndex();
         int left = getLeft();
@@ -365,8 +381,8 @@ public final class Cursor {
         }
         left = left - Math.max(0, Math.min(left - beginIdx, endIdx - beginIdx));
         right = right - Math.max(0, Math.min(right - beginIdx, endIdx - beginIdx));
-        leftSel = indexer.getCharPosition(left).fromThis();
-        rightSel = indexer.getCharPosition(right).fromThis();
+        leftSel = getCharPosition(left).fromThis();
+        rightSel = getCharPosition(right).fromThis();
     }
 
 }
