@@ -251,8 +251,8 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
     protected EditorContextMenuCreator contextMenuCreator;
     protected List<Span> defaultSpans = new ArrayList<>(2);
     protected EditorStyleDelegate styleDelegate;
-    int startedActionMode;
     protected CharPosition selectionAnchor;
+    int startedActionMode;
     EditorInputConnection inputConnection;
     EventManager eventManager;
     Layout layout;
@@ -1010,14 +1010,6 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
     }
 
     /**
-     * This only makes sense when wordwrap is enabled.
-     * Checks if anti word breaking is enabled in wordwrap mode.
-     */
-    public boolean isAntiWordBreaking() {
-        return antiWordBreaking;
-    }
-
-    /**
      * Set whether text in editor should be wrapped to fit its size, with anti-word-breaking enabled
      * by default
      *
@@ -1027,6 +1019,14 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
      */
     public void setWordwrap(boolean wordwrap) {
         setWordwrap(wordwrap, true);
+    }
+
+    /**
+     * This only makes sense when wordwrap is enabled.
+     * Checks if anti word breaking is enabled in wordwrap mode.
+     */
+    public boolean isAntiWordBreaking() {
+        return antiWordBreaking;
     }
 
     /**
@@ -1094,17 +1094,13 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
         invalidate();
     }
 
-    public void setHorizontalScrollbarThumbDrawable(@Nullable Drawable drawable) {
-        renderer.setHorizontalScrollbarThumbDrawable(drawable);
-    }
-
     @Nullable
     public Drawable getHorizontalScrollbarThumbDrawable() {
         return renderer.getHorizontalScrollbarThumbDrawable();
     }
 
-    public void setHorizontalScrollbarTrackDrawable(@Nullable Drawable drawable) {
-        renderer.setHorizontalScrollbarTrackDrawable(drawable);
+    public void setHorizontalScrollbarThumbDrawable(@Nullable Drawable drawable) {
+        renderer.setHorizontalScrollbarThumbDrawable(drawable);
     }
 
     @Nullable
@@ -1112,8 +1108,8 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
         return renderer.getHorizontalScrollbarTrackDrawable();
     }
 
-    public void setVerticalScrollbarThumbDrawable(@Nullable Drawable drawable) {
-        renderer.setVerticalScrollbarThumbDrawable(drawable);
+    public void setHorizontalScrollbarTrackDrawable(@Nullable Drawable drawable) {
+        renderer.setHorizontalScrollbarTrackDrawable(drawable);
     }
 
     @Nullable
@@ -1121,13 +1117,17 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
         return renderer.getVerticalScrollbarThumbDrawable();
     }
 
-    public void setVerticalScrollbarTrackDrawable(@Nullable Drawable drawable) {
-        renderer.setVerticalScrollbarTrackDrawable(drawable);
+    public void setVerticalScrollbarThumbDrawable(@Nullable Drawable drawable) {
+        renderer.setVerticalScrollbarThumbDrawable(drawable);
     }
 
     @Nullable
     public Drawable getVerticalScrollbarTrackDrawable() {
         return renderer.getVerticalScrollbarTrackDrawable();
+    }
+
+    public void setVerticalScrollbarTrackDrawable(@Nullable Drawable drawable) {
+        renderer.setVerticalScrollbarTrackDrawable(drawable);
     }
 
     /**
@@ -2250,6 +2250,15 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
     }
 
     /**
+     * Get the factor used to compute extra space of vertical viewport.
+     *
+     * @see #setVerticalExtraSpaceFactor(float)
+     */
+    public float getVerticalExtraSpaceFactor() {
+        return verticalExtraSpaceFactor;
+    }
+
+    /**
      * Set the factor of extra space in vertical direction. The factor is multiplied with editor
      * height to compute the extra space of vertical viewport. Specially, when factor is zero, no
      * extra space is added.
@@ -2268,21 +2277,19 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
     }
 
     /**
-     * Get the factor used to compute extra space of vertical viewport.
-     *
-     * @see #setVerticalExtraSpaceFactor(float)
-     */
-    public float getVerticalExtraSpaceFactor() {
-        return verticalExtraSpaceFactor;
-    }
-
-    /**
      * Get EditorSearcher
      *
      * @return EditorSearcher
      */
     public EditorSearcher getSearcher() {
         return editorSearcher;
+    }
+
+    /**
+     * @see #setBasicDisplayMode(boolean)
+     */
+    public boolean isBasicDisplayMode() {
+        return renderer.isBasicDisplayMode();
     }
 
     /**
@@ -2303,13 +2310,6 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
         renderer.basicDisplayMode = enabled;
         renderer.updateTimestamp();
         invalidate();
-    }
-
-    /**
-     * @see #setBasicDisplayMode(boolean)
-     */
-    public boolean isBasicDisplayMode() {
-        return renderer.isBasicDisplayMode();
     }
 
     /**
@@ -2472,6 +2472,13 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
     }
 
     /**
+     * @see #setLineSeparator(LineSeparator)
+     */
+    public LineSeparator getLineSeparator() {
+        return lineSeparator;
+    }
+
+    /**
      * Set line separator when new lines are created in editor (only texts from IME. texts from clipboard
      * or other strategies are not encountered). Must not be{@link LineSeparator#NONE}
      *
@@ -2483,13 +2490,6 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
             throw new IllegalArgumentException();
         }
         this.lineSeparator = lineSeparator;
-    }
-
-    /**
-     * @see #setLineSeparator(LineSeparator)
-     */
-    public LineSeparator getLineSeparator() {
-        return lineSeparator;
     }
 
     /**
@@ -2719,19 +2719,19 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
     }
 
     /**
+     * @see #setLineNumberMarginLeft(float)
+     */
+    public float getLineNumberMarginLeft() {
+        return lineNumberMarginLeft;
+    }
+
+    /**
      * Set line number margin left
      */
     public void setLineNumberMarginLeft(@Px float lineNumberMarginLeft) {
         this.lineNumberMarginLeft = lineNumberMarginLeft;
         requestLayoutIfNeeded();
         invalidate();
-    }
-
-    /**
-     * @see #setLineNumberMarginLeft(float)
-     */
-    public float getLineNumberMarginLeft() {
-        return lineNumberMarginLeft;
     }
 
     /**
@@ -3868,6 +3868,13 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
     }
 
     /**
+     * @see #setRenderFunctionCharacters(boolean)
+     */
+    public boolean isRenderFunctionCharacters() {
+        return renderFunctionCharacters;
+    }
+
+    /**
      * Render ASCII Function characters
      *
      * @see #isRenderFunctionCharacters()
@@ -3880,13 +3887,6 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
             createLayout();
             invalidate();
         }
-    }
-
-    /**
-     * @see #setRenderFunctionCharacters(boolean)
-     */
-    public boolean isRenderFunctionCharacters() {
-        return renderFunctionCharacters;
     }
 
     /**
@@ -4172,6 +4172,15 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
     }
 
     /**
+     * Returns whether the soft keyboard is enabled.
+     *
+     * @return Whether the soft keyboard is enabled.
+     */
+    public boolean isSoftKeyboardEnabled() {
+        return this.isSoftKbdEnabled;
+    }
+
+    /**
      * Set whether the soft keyboard is enabled for this editor. Set to {@code true} by default.
      *
      * @param isEnabled Whether the soft keyboard is enabled.
@@ -4188,12 +4197,12 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
     }
 
     /**
-     * Returns whether the soft keyboard is enabled.
+     * Returns whether the soft keyboard should be enabled if hardware keyboard is connected.
      *
-     * @return Whether the soft keyboard is enabled.
+     * @return Whether the soft keyboard should be enabled if hardware keyboard is connected.
      */
-    public boolean isSoftKeyboardEnabled() {
-        return this.isSoftKbdEnabled;
+    public boolean isDisableSoftKbdIfHardKbdAvailable() {
+        return isDisableSoftKbdOnHardKbd;
     }
 
     /**
@@ -4211,15 +4220,6 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
         this.isDisableSoftKbdOnHardKbd = isDisabled;
         hideSoftInput();
         restartInput();
-    }
-
-    /**
-     * Returns whether the soft keyboard should be enabled if hardware keyboard is connected.
-     *
-     * @return Whether the soft keyboard should be enabled if hardware keyboard is connected.
-     */
-    public boolean isDisableSoftKbdIfHardKbdAvailable() {
-        return isDisableSoftKbdOnHardKbd;
     }
 
     /**
