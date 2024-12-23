@@ -3811,6 +3811,9 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
         } else {
             this.text = new Content(text);
         }
+
+        onSetText(this.text);
+
         this.text.setBidiEnabled(!renderer.basicDisplayMode);
         styleDelegate.reset();
         textStyles = null;
@@ -3835,6 +3838,15 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
         requestLayout();
         renderContext.invalidateRenderNodes();
         invalidate();
+    }
+
+    /**
+     * Called during {@link #setText(CharSequence, boolean, Bundle)} to notify that this editor's
+     * backing {@link Content} has been changed.
+     *
+     * @param text The new text of the editor.
+     */
+    protected void onSetText(Content text) {
     }
 
     /**
