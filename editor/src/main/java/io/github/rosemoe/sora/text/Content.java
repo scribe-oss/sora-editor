@@ -997,6 +997,18 @@ public class Content implements CharSequence {
     }
 
     /**
+     * Get the cursor for the editor.
+     * <p>
+     * Unlike {@link #getCursor()}, this won't create a new cursor instance.
+     * </p>
+     *
+     * @return The current {@link Cursor}, or `null` if there is no cursor.
+     */
+    protected Cursor getCursorUnsafe() {
+        return this.cursor;
+    }
+
+    /**
      * Get Cursor for editor (Create if there is not)
      *
      * @return Cursor
