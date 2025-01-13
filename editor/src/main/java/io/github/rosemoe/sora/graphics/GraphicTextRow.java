@@ -49,6 +49,7 @@ import io.github.rosemoe.sora.widget.rendering.RenderingConstants;
 public class GraphicTextRow {
 
     private final static GraphicTextRow[] sCached = new GraphicTextRow[5];
+    private final Directions tmpDirections = new Directions(new long[]{IntPair.pack(0, 0)}, 0);
     private Paint paint;
     private ContentLine text;
     private RenderContext context;
@@ -61,7 +62,6 @@ public class GraphicTextRow {
     private boolean useCache = true;
     private List<Integer> softBreaks;
     private boolean quickMeasureMode;
-    private final Directions tmpDirections = new Directions(new long[]{IntPair.pack(0, 0)}, 0);
 
     private GraphicTextRow() {
 
